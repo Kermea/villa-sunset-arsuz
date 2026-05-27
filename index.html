@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Villa Sunset Arsuz — Luxury Sea View Residences</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* Offline fallbacks — if Google Fonts unavailable, these keep the design intact */
+  @font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 300 500;
+    src: local('Georgia'), local('Times New Roman');
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Outfit';
+    font-style: normal;
+    font-weight: 200 500;
+    src: local('Helvetica Neue'), local('Arial');
+    font-display: swap;
+  }
+</style>
+<style>
+:root {
+  --navy: #060f1e;
+  --navy-mid: #0d1d35;
+  --navy-light: #152d50;
+  --gold: #c8a45a;
+  --gold-light: #e8c97e;
+  --gold-pale: #f5e9c8;
+  --cream: #f8f3ea;
+  --white: #ffffff;
+  --text-muted: rgba(255,255,255,0.45);
+  --text-dim: rgba(255,255,255,0.7);
+  --transition: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--navy);
+  color: var(--white);
+  overflow-x: hidden;
+}
+
+/* ── INTRO OVERLAY ── */
+#intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#intro.done { pointer-events: none; }
+
+.intro-noise {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.4;
+}
+
+.intro-horizon {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(200,164,90,0.06), transparent);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 1.4s var(--transition);
+}
+#intro.active .intro-horizon { transform: scaleY(1); }
+
+.intro-lines {
+  position: absolute; inset: 0;
+  opacity: 0;
+  background-image:
+    linear-gradient(rgba(200,164,90,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,164,90,0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transition: opacity 0.8s ease 0.5s;
+}
+#intro.active .intro-lines { opacity: 1; }
+
+.intro-content {
+  position: relative; z-index: 2;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+}
+
+.intro-eyebrow {
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.7s ease 0.3s, transform 0.7s var(--transition) 0.3s;
+}
+#intro.active .intro-eyebrow { opacity: 1; transform: translateY(0); }
+
+.intro-logo-wrap {
+  overflow: hidden;
+  padding-bottom: 0.1em;
+}
+.intro-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 10vw, 6.5rem);
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--white);
+  display: block;
+  transform: translateY(110%);
+  transition: transform 1s var(--transition) 0.5s;
+}
+.intro-logo em { color: var(--gold-light); font-style: italic; }
+#intro.active .intro-logo { transform: translateY(0); }
+
+.intro-tagline {
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.7s ease 1.1s;
+}
+#intro.active .intro-tagline { opacity: 1; }
+
+.intro-bar {
+  width: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  transition: width 1.6s var(--transition) 0.8s;
+  max-width: 400px;
+}
+#intro.active .intro-bar { width: 400px; }
+
+.intro-progress {
+  font-size: 0.6rem; letter-spacing: 0.4em; color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.5s ease 1s;
+}
+#intro.active .intro-progress { opacity: 1; }
+
+.intro-dismiss {
+  position: absolute; bottom: 3rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.7s ease 2s;
+  cursor: pointer;
+}
+#intro.active .intro-dismiss { opacity: 1; }
+.intro-dismiss span { font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--text-muted); }
+.intro-dismiss-line {
+  width: 1px; height: 45px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  animation: pulse-line 2s ease infinite 2s;
+}
+@keyframes pulse-line { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* intro exit */
+#intro.exit {
+  animation: introExit 1.2s var(--transition) forwards;
+}
+@keyframes introExit {
+  0% { clip-path: inset(0 0 0 0); }
+  100% { clip-path: inset(0 0 100% 0); }
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.6rem 4rem;
+  transition: all 0.5s ease;
+}
+nav.scrolled {
+  background: rgba(6,15,30,0.96);
+  backdrop-filter: blur(20px);
+  padding: 1.1rem 4rem;
+  border-bottom: 1px solid rgba(200,164,90,0.1);
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: var(--gold-light);
+  text-decoration: none;
+}
+.nav-logo span { color: rgba(255,255,255,0.7); font-weight: 300; }
+.nav-links { display: flex; gap: 2.8rem; align-items: center; }
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -3px; left: 0; right: 100%;
+  height: 1px; background: var(--gold);
+  transition: right 0.35s var(--transition);
+}
+.nav-links a:hover { color: var(--gold-light); }
+.nav-links a:hover::after { right: 0; }
+.lang-toggle {
+  display: flex;
+  border: 1px solid rgba(200,164,90,0.3);
+  border-radius: 2px; overflow: hidden;
+}
+.lang-toggle button {
+  background: transparent; border: none; color: var(--text-muted);
+  padding: 0.3rem 0.8rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.68rem; font-weight: 400; letter-spacing: 0.1em;
+  cursor: none; transition: all 0.25s;
+}
+.lang-toggle button.active { background: var(--gold); color: var(--navy); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center;
+  position: relative; overflow: hidden;
+  padding: 10rem 2rem 5rem;
+}
+
+/* animated gradient sky */
+.hero-sky {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 120% 70% at 50% 120%, rgba(200,164,90,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 70% 30%, rgba(200,164,90,0.04) 0%, transparent 60%),
+    linear-gradient(175deg, #060f1e 0%, #0d1d35 40%, #0a1828 70%, #060f1e 100%);
+  animation: skypulse 12s ease-in-out infinite alternate;
+}
+@keyframes skypulse {
+  from { background-position: 0 0; }
+  to {
+    filter: brightness(1.06) saturate(1.1);
+  }
+}
+
+/* ocean wave scene */
+.hero-ocean {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 45%;
+  overflow: hidden;
+}
+.wave { position: absolute; left: -20%; width: 140%; }
+.wave1 {
+  bottom: 0;
+  animation: wave-move1 14s linear infinite;
+  opacity: 0.18;
+}
+.wave2 {
+  bottom: 8px;
+  animation: wave-move2 20s linear infinite;
+  opacity: 0.1;
+}
+.wave3 {
+  bottom: 16px;
+  animation: wave-move3 26s linear infinite;
+  opacity: 0.06;
+}
+@keyframes wave-move1 { 0%{transform:translateX(0)} 100%{transform:translateX(10%)} }
+@keyframes wave-move2 { 0%{transform:translateX(0)} 100%{transform:translateX(-8%)} }
+@keyframes wave-move3 { 0%{transform:translateX(0)} 100%{transform:translateX(6%)} }
+
+/* stars */
+.hero-stars {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s);
+}
+@keyframes twinkle { 0%,100%{opacity:var(--o,0.6)} 50%{opacity:0.1} }
+
+.hero-grid-lines {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(200,164,90,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,164,90,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+.hero-content { position: relative; z-index: 2; }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 1rem;
+  font-size: 0.62rem; font-weight: 300; letter-spacing: 0.5em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 2.5rem;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 1s ease 0.3s forwards;
+}
+.hero-badge::before, .hero-badge::after {
+  content: ''; display: block; width: 30px; height: 1px; background: var(--gold); opacity: 0.5;
+}
+
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3.8rem, 10vw, 8.5rem);
+  font-weight: 300; line-height: 0.88; letter-spacing: -0.01em;
+  margin-bottom: 0.6rem;
+  opacity: 0; transform: translateY(30px);
+  animation: fadeUp 1.2s ease 0.5s forwards;
+}
+.hero h1 em { font-style: italic; color: var(--gold-light); }
+
+.hero-sub {
+  font-size: 0.75rem; font-weight: 300; letter-spacing: 0.5em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 1s ease 0.8s forwards;
+}
+
+.hero-desc {
+  font-size: 0.98rem; font-weight: 300; color: var(--text-dim);
+  max-width: 460px; line-height: 2; margin: 0 auto 3rem;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 1s ease 1s forwards;
+}
+
+.hero-ctas {
+  display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 1s ease 1.15s forwards;
+}
+
+.btn-primary {
+  background: var(--gold); color: var(--navy);
+  border: none; padding: 1.05rem 2.8rem;
+  font-family: 'Outfit', sans-serif; font-size: 0.74rem;
+  font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+  cursor: none; text-decoration: none; display: inline-block;
+  position: relative; overflow: hidden;
+  transition: color 0.3s;
+}
+.btn-primary::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--gold-light);
+  transform: translateX(-101%);
+  transition: transform 0.5s var(--transition);
+}
+.btn-primary:hover::before { transform: translateX(0); }
+.btn-primary span { position: relative; z-index: 1; }
+
+.btn-outline {
+  background: transparent; color: var(--white);
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 1.05rem 2.8rem;
+  font-family: 'Outfit', sans-serif; font-size: 0.74rem;
+  font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase;
+  cursor: none; text-decoration: none; display: inline-block;
+  transition: all 0.3s;
+}
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+.hero-stats {
+  display: flex; gap: 5rem; justify-content: center;
+  margin-top: 5.5rem; padding-top: 3rem;
+  border-top: 1px solid rgba(200,164,90,0.12);
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp 1s ease 1.3s forwards;
+}
+.stat-item { text-align: center; }
+.stat-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem; font-weight: 300; color: var(--gold-light); line-height: 1;
+}
+.stat-label {
+  font-size: 0.62rem; font-weight: 300; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--text-muted); margin-top: 0.5rem;
+}
+
+.scroll-indicator {
+  position: absolute; bottom: 2.5rem; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+  opacity: 0; animation: fadeUp 1s ease 1.6s forwards;
+}
+.scroll-indicator span { font-size: 0.58rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--text-muted); }
+.scroll-line {
+  width: 1px; height: 50px;
+  background: linear-gradient(to bottom, transparent, var(--gold));
+  animation: scroll-drop 2s ease-in-out infinite;
+}
+@keyframes scroll-drop {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+
+/* ── SECTION BASE ── */
+section { padding: 8rem 5rem; }
+.section-label {
+  font-size: 0.62rem; font-weight: 300; letter-spacing: 0.45em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 5vw, 4.2rem);
+  font-weight: 300; line-height: 1.1; margin-bottom: 1.8rem;
+}
+.section-title em { font-style: italic; color: var(--gold-light); }
+.section-body {
+  font-size: 0.92rem; font-weight: 300;
+  color: var(--text-dim); line-height: 2.1; max-width: 520px;
+}
+.gold-line {
+  width: 55px; height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  margin-bottom: 2.2rem;
+}
+
+/* ── REVEAL ANIMATION ── */
+.reveal {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.9s ease, transform 0.9s var(--transition);
+}
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-delay { transition-delay: 0.18s; }
+.reveal-delay-2 { transition-delay: 0.36s; }
+
+/* ── ABOUT ── */
+.about {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 7rem; align-items: center;
+  background: linear-gradient(175deg, var(--navy-mid) 0%, var(--navy) 100%);
+  position: relative; overflow: hidden;
+}
+.about::before {
+  content: 'ARSUZ';
+  position: absolute; right: -2rem; top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  font-family: 'Playfair Display', serif;
+  font-size: 12rem; font-weight: 300;
+  color: rgba(200,164,90,0.03);
+  letter-spacing: 0.2em;
+  white-space: nowrap; pointer-events: none;
+}
+
+.about-visual {
+  position: relative; height: 560px;
+}
+
+.about-img-frame {
+  position: absolute; inset: 0;
+  border: 1px solid rgba(200,164,90,0.18);
+  background: var(--navy-light);
+  overflow: hidden;
+}
+
+.about-img-frame::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 80%, rgba(200,164,90,0.1), transparent 60%),
+    linear-gradient(180deg, transparent 30%, rgba(6,15,30,0.6) 100%);
+  z-index: 1;
+}
+
+/* architectural SVG illustration */
+.about-illustration { position: absolute; inset: 0; z-index: 0; }
+
+.about-badge {
+  position: absolute; top: -1.5rem; right: -1.5rem; z-index: 3;
+  width: 110px; height: 110px;
+  border: 1px solid rgba(200,164,90,0.4);
+  border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--navy-mid);
+  box-shadow: 0 0 40px rgba(200,164,90,0.12);
+}
+.about-badge-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem; font-weight: 300; color: var(--gold-light); line-height: 1;
+}
+.about-badge-txt {
+  font-size: 0.52rem; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--text-muted); text-align: center;
+}
+
+.about-card-footer {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+  padding: 2rem;
+  background: linear-gradient(to top, rgba(6,15,30,0.95), transparent);
+}
+.about-card-tag {
+  font-size: 0.6rem; letter-spacing: 0.35em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 0.5rem;
+}
+.about-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem; font-weight: 300; color: var(--white); line-height: 1.2;
+}
+
+.about-highlights { display: flex; flex-direction: column; gap: 1.8rem; margin-top: 2.8rem; }
+.about-highlight {
+  display: flex; gap: 1.2rem; align-items: flex-start;
+  padding: 1.5rem;
+  border: 1px solid rgba(200,164,90,0.1);
+  background: rgba(200,164,90,0.02);
+  transition: all 0.35s;
+}
+.about-highlight:hover { border-color: rgba(200,164,90,0.25); background: rgba(200,164,90,0.04); }
+.ah-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 0.1rem; }
+.ah-title {
+  font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em;
+  margin-bottom: 0.4rem; color: var(--white);
+}
+.ah-desc { font-size: 0.82rem; font-weight: 300; color: var(--text-muted); line-height: 1.8; }
+
+/* ── VILLA TYPES ── */
+.villas { background: var(--navy); }
+.villas-header { text-align: center; max-width: 600px; margin: 0 auto 5rem; }
+.villas-header .gold-line { margin: 0 auto 2rem; }
+
+.villas-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.villa-card {
+  border: 1px solid rgba(200,164,90,0.12);
+  padding: 3.5rem;
+  position: relative; overflow: hidden;
+  transition: all 0.5s var(--transition);
+  background: linear-gradient(145deg, rgba(21,45,80,0.5), rgba(13,29,53,0.8));
+}
+.villa-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(145deg, rgba(200,164,90,0.06), transparent);
+  opacity: 0; transition: opacity 0.5s;
+}
+.villa-card:hover::before { opacity: 1; }
+.villa-card:hover { border-color: rgba(200,164,90,0.3); transform: translateY(-4px); }
+
+.villa-card-glow {
+  position: absolute; top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(200,164,90,0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.villa-count {
+  position: absolute; top: 2.5rem; right: 2.5rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 4rem; font-weight: 300;
+  color: rgba(200,164,90,0.07); line-height: 1;
+}
+.villa-tag {
+  display: inline-block;
+  background: rgba(200,164,90,0.12);
+  border: 1px solid rgba(200,164,90,0.25);
+  color: var(--gold);
+  font-size: 0.6rem; font-weight: 400; letter-spacing: 0.3em;
+  text-transform: uppercase; padding: 0.35rem 1rem;
+  margin-bottom: 1.5rem;
+}
+.villa-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem; font-weight: 300; margin-bottom: 1.2rem;
+}
+.villa-title em { font-style: italic; color: var(--gold-light); }
+.villa-desc {
+  font-size: 0.86rem; font-weight: 300; color: var(--text-dim);
+  line-height: 2; margin-bottom: 2.2rem;
+}
+.villa-features { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+.villa-features li {
+  font-size: 0.8rem; font-weight: 300; color: var(--text-dim);
+  display: flex; align-items: center; gap: 0.9rem;
+}
+.villa-features li::before {
+  content: '';
+  width: 20px; height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  flex-shrink: 0;
+}
+
+/* ── FEATURES ── */
+.features {
+  background: linear-gradient(180deg, var(--navy-mid) 0%, var(--navy) 100%);
+  text-align: center; position: relative; overflow: hidden;
+}
+.features::after {
+  content: '';
+  position: absolute; left: 50%; top: 0; bottom: 0;
+  width: 1px; background: linear-gradient(to bottom, transparent, rgba(200,164,90,0.1) 20%, rgba(200,164,90,0.1) 80%, transparent);
+  transform: translateX(-50%);
+}
+.features-header { max-width: 600px; margin: 0 auto 5rem; }
+.features-header .gold-line { margin: 0 auto 2rem; }
+
+.features-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  position: relative; z-index: 1;
+}
+.feature-item {
+  padding: 3rem 2rem;
+  border: 1px solid rgba(200,164,90,0.08);
+  transition: all 0.4s;
+  position: relative; overflow: hidden;
+}
+.feature-item::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  transform: scaleX(0); transition: transform 0.5s var(--transition);
+}
+.feature-item:hover::after { transform: scaleX(1); }
+.feature-item:hover { background: rgba(200,164,90,0.04); }
+
+.feature-icon {
+  font-size: 1.8rem; margin-bottom: 1.5rem;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(200,164,90,0.3));
+}
+.feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem; font-weight: 400;
+  margin-bottom: 1rem; color: var(--white);
+}
+.feature-desc {
+  font-size: 0.82rem; font-weight: 300;
+  color: var(--text-muted); line-height: 1.9;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid rgba(200,164,90,0.12);
+  padding: 3rem 5rem;
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--navy);
+}
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem; font-weight: 400;
+  letter-spacing: 0.15em; color: var(--gold-light);
+}
+.footer-logo span { color: rgba(255,255,255,0.5); font-weight: 300; }
+.footer-copy {
+  font-size: 0.68rem; font-weight: 300;
+  letter-spacing: 0.12em; color: var(--text-muted);
+}
+
+/* ── LANG HELPERS ── */
+body:not(.tr) [data-lang="tr"],
+body:not(.tr) .inline-tr { display: none; }
+body.tr [data-lang="en"],
+body.tr .inline-en { display: none; }
+[data-lang], .inline-en, .inline-tr { display: inline; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── BURGER BUTTON ── */
+.nav-burger {
+  display: none;
+  flex-direction: column; justify-content: center; gap: 5px;
+  background: none; border: none; padding: 0.4rem;
+  cursor: pointer; z-index: 600;
+}
+.nav-burger span {
+  display: block; width: 24px; height: 1.5px;
+  background: var(--gold-light); transition: all 0.3s;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .about { grid-template-columns: 1fr; gap: 4rem; }
+  .about-visual { height: 380px; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .villas-grid { grid-template-columns: 1fr; }
+  nav { padding: 1.2rem 2rem; }
+  section { padding: 6rem 2rem; }
+}
+@media (max-width: 768px) {
+  .nav-burger { display: flex; }
+  .nav-links {
+    display: none !important;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(6,15,30,0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    flex-direction: column !important;
+    align-items: center; justify-content: center;
+    gap: 2.5rem; z-index: 500;
+  }
+  .nav-links.open { display: flex !important; }
+  .nav-links a { font-size: 1.2rem; letter-spacing: 0.2em; }
+  .lang-toggle { margin-top: 1.5rem; transform: scale(1.2); }
+  .hero-stats { gap: 2rem; flex-wrap: wrap; justify-content: center; }
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2.5rem 2rem; }
+  .about::before { display: none; }
+  .hero-badge { flex-direction: column; gap: 0.5rem; }
+  .hero-badge::before, .hero-badge::after { display: none; }
+}
+@media (max-width: 480px) {
+  .features-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 3rem; }
+  nav { padding: 1rem 1.5rem; }
+  section { padding: 5rem 1.5rem; }
+  .hero-stats { gap: 1.5rem; }
+  .stat-number { font-size: 2.2rem; }
+  .villa-card { padding: 2.5rem 1.8rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- INTRO OVERLAY -->
+<div id="intro">
+  <div class="intro-noise"></div>
+  <div class="intro-horizon"></div>
+  <div class="intro-lines"></div>
+  <div class="intro-content">
+    <div class="intro-eyebrow">Arsuz · Hatay · Mediterranean</div>
+    <div class="intro-logo-wrap">
+      <span class="intro-logo">Villa <em>Sunset</em> Arsuz</span>
+    </div>
+    <div class="intro-bar"></div>
+    <div class="intro-tagline">Luxury Sea View Residences</div>
+    <div class="intro-progress" id="intro-progress">— entering —</div>
+  </div>
+  <div class="intro-dismiss" id="intro-dismiss" onclick="dismissIntro()">
+    <div class="intro-dismiss-line"></div>
+    <span>Enter</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Villa <em style="font-style:italic;color:var(--gold-light)">Sunset</em> <span>Arsuz</span></a>
+  <button class="nav-burger" id="nav-toggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="nav-links">
+    <a href="#about"><span class="inline-en">The Development</span><span class="inline-tr">Proje</span></a>
+    <a href="#villas"><span class="inline-en">Villas</span><span class="inline-tr">Villalar</span></a>
+    <a href="#features"><span class="inline-en">Amenities</span><span class="inline-tr">Olanaklar</span></a>
+    <div class="lang-toggle">
+      <button class="active" onclick="setLang('en')">EN</button>
+      <button onclick="setLang('tr')">TR</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-sky"></div>
+  <div class="hero-grid-lines"></div>
+
+  <!-- stars -->
+  <div class="hero-stars" id="stars"></div>
+
+  <!-- ocean -->
+  <div class="hero-ocean">
+    <svg class="wave wave1" viewBox="0 0 1440 120" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 C180,10 360,110 540,60 C720,10 900,110 1080,60 C1260,10 1440,80 1440,60 L1440,120 L0,120 Z" fill="url(#wg1)"/>
+      <defs><linearGradient id="wg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c8a45a" stop-opacity="0.4"/><stop offset="100%" stop-color="#0d1d35" stop-opacity="0.9"/></linearGradient></defs>
+    </svg>
+    <svg class="wave wave2" viewBox="0 0 1440 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,50 C240,0 480,100 720,50 C960,0 1200,100 1440,50 L1440,100 L0,100 Z" fill="url(#wg2)"/>
+      <defs><linearGradient id="wg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c8a45a" stop-opacity="0.2"/><stop offset="100%" stop-color="#060f1e" stop-opacity="0.8"/></linearGradient></defs>
+    </svg>
+    <svg class="wave wave3" viewBox="0 0 1440 80" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C360,0 720,80 1080,40 C1260,20 1440,60 1440,40 L1440,80 L0,80 Z" fill="url(#wg3)"/>
+      <defs><linearGradient id="wg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c8a45a" stop-opacity="0.12"/><stop offset="100%" stop-color="#060f1e" stop-opacity="0.5"/></linearGradient></defs>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="inline-en">Arsuz · Hatay · Mediterranean Coast</span>
+      <span class="inline-tr">Arsuz · Hatay · Akdeniz Kıyısı</span>
+    </div>
+    <h1>
+      <span data-lang="en">Villa<br><em>Sunset</em><br>Arsuz</span>
+      <span data-lang="tr">Villa<br><em>Sunset</em><br>Arsuz</span>
+    </h1>
+    <p class="hero-sub">
+      <span class="inline-en">Luxury Sea View Residences</span>
+      <span class="inline-tr">Lüks Deniz Manzaralı Rezidanslar</span>
+    </p>
+    <p class="hero-desc">
+      <span class="inline-en">Where Mediterranean light meets architectural elegance. 70 exclusive villas on the shores of Arsuz — each a private sanctuary with its own pool and sea views.</span>
+      <span class="inline-tr">Akdeniz ışığının mimari zarafetle buluştuğu yer. Arsuz kıyılarında 70 özel villa — her biri özel havuzu ve deniz manzarasıyla kişisel bir sığınak.</span>
+    </p>
+    <div class="hero-ctas">
+      <a href="#villas" class="btn-primary"><span><span class="inline-en">Explore Villas</span><span class="inline-tr">Villaları Keşfet</span></span></a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-number">70</div>
+        <div class="stat-label"><span class="inline-en">Exclusive Villas</span><span class="inline-tr">Özel Villa</span></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">70</div>
+        <div class="stat-label"><span class="inline-en">Private Pools</span><span class="inline-tr">Özel Havuz</span></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">∞</div>
+        <div class="stat-label"><span class="inline-en">Sea Views</span><span class="inline-tr">Deniz Manzarası</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span><span class="inline-en">Scroll</span><span class="inline-tr">Kaydır</span></span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="reveal">
+    <p class="section-label"><span class="inline-en">The Development</span><span class="inline-tr">Proje Hakkında</span></p>
+    <div class="gold-line"></div>
+    <h2 class="section-title">
+      <span data-lang="en">A new standard<br>of <em>coastal living</em></span>
+      <span data-lang="tr">Kıyı yaşamında<br>yeni bir <em>standart</em></span>
+    </h2>
+    <p class="section-body">
+      <span data-lang="en">Villa Sunset Arsuz is a prestigious residential community nestled between the Mediterranean Sea and the lush hillsides of Arsuz, Hatay. Near completion, this development redefines what luxury living means on Turkey's southern coast.</span>
+      <span data-lang="tr">Villa Sunset Arsuz, Hatay'ın Arsuz ilçesinde Akdeniz kıyısı ile yemyeşil tepeler arasında konumlanan prestijli bir konut topluluğudur. Tamamlanma aşamasındaki bu proje, Türkiye'nin güney kıyısında lüks yaşamı yeniden tanımlıyor.</span>
+    </p>
+    <div class="about-highlights">
+      <div class="about-highlight">
+        <div class="ah-icon">🌊</div>
+        <div>
+          <div class="ah-title"><span class="inline-en">Beachfront Community</span><span class="inline-tr">Sahil Topluluğu</span></div>
+          <div class="ah-desc"><span class="inline-en">Direct access to the Mediterranean — pristine beaches steps from your villa.</span><span class="inline-tr">Akdeniz'e doğrudan erişim — villanızdan adım mesafesinde tertemiz plajlar.</span></div>
+        </div>
+      </div>
+      <div class="about-highlight">
+        <div class="ah-icon">🏛️</div>
+        <div>
+          <div class="ah-title"><span class="inline-en">Near Completion</span><span class="inline-tr">Tamamlanma Aşamasında</span></div>
+          <div class="ah-desc"><span class="inline-en">Construction is nearly complete — secure your villa now before handover.</span><span class="inline-tr">İnşaat neredeyse tamamlandı — teslim öncesinde villanızı şimdi güvence altına alın.</span></div>
+        </div>
+      </div>
+      <div class="about-highlight">
+        <div class="ah-icon">🏊</div>
+        <div>
+          <div class="ah-title"><span class="inline-en">Private & Community Pools</span><span class="inline-tr">Özel ve Ortak Havuzlar</span></div>
+          <div class="ah-desc"><span class="inline-en">Every villa features its own private pool, plus a grand community pool in the social facilities area.</span><span class="inline-tr">Her villada özel havuz; ayrıca sosyal tesis alanında büyük ortak havuz.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="about-visual reveal reveal-delay">
+    <div class="about-img-frame">
+      <!-- Architectural SVG illustration -->
+      <svg class="about-illustration" viewBox="0 0 500 560" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#060f1e"/>
+            <stop offset="60%" stop-color="#0d1d35"/>
+            <stop offset="100%" stop-color="#152d50"/>
+          </linearGradient>
+          <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#152d50"/>
+            <stop offset="100%" stop-color="#060f1e"/>
+          </linearGradient>
+          <linearGradient id="sunGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%" id="sunGrad2" gradientUnits="objectBoundingBox">
+            <stop offset="0%" stop-color="#e8c97e" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#c8a45a" stop-opacity="0"/>
+          </linearGradient>
+          <radialGradient id="sunRad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#e8c97e" stop-opacity="0.7"/>
+            <stop offset="40%" stop-color="#c8a45a" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#c8a45a" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- sky -->
+        <rect width="500" height="560" fill="url(#skyGrad)"/>
+        <!-- sun glow -->
+        <circle cx="250" cy="220" r="130" fill="url(#sunRad)"/>
+        <!-- horizon line -->
+        <line x1="0" y1="330" x2="500" y2="330" stroke="rgba(200,164,90,0.2)" stroke-width="1"/>
+        <!-- sea -->
+        <rect x="0" y="330" width="500" height="230" fill="url(#seaGrad)"/>
+        <!-- sea shimmer lines -->
+        <g opacity="0.15">
+          <line x1="50" y1="350" x2="150" y2="350" stroke="#c8a45a" stroke-width="1"/>
+          <line x1="200" y1="365" x2="340" y2="365" stroke="#c8a45a" stroke-width="1"/>
+          <line x1="80" y1="380" x2="200" y2="380" stroke="#c8a45a" stroke-width="1"/>
+          <line x1="280" y1="395" x2="420" y2="395" stroke="#c8a45a" stroke-width="1"/>
+          <line x1="30" y1="415" x2="170" y2="415" stroke="#c8a45a" stroke-width="1"/>
+          <line x1="240" y1="430" x2="380" y2="430" stroke="#c8a45a" stroke-width="1"/>
+          <line x1="100" y1="450" x2="210" y2="450" stroke="#c8a45a" stroke-width="0.5"/>
+          <line x1="310" y1="465" x2="450" y2="465" stroke="#c8a45a" stroke-width="0.5"/>
+        </g>
+        <!-- reflection -->
+        <rect x="160" y="330" width="180" height="100" fill="url(#sunRad)" opacity="0.15"/>
+
+        <!-- villa left (duplex) -->
+        <g filter="url(#glow)">
+          <!-- base -->
+          <rect x="60" y="280" width="120" height="55" fill="#0d1d35" stroke="rgba(200,164,90,0.3)" stroke-width="0.5"/>
+          <!-- second floor -->
+          <rect x="75" y="240" width="105" height="45" fill="#152d50" stroke="rgba(200,164,90,0.25)" stroke-width="0.5"/>
+          <!-- flat roof -->
+          <rect x="70" y="235" width="115" height="6" fill="#1a3560"/>
+          <!-- windows lower -->
+          <rect x="75" y="292" width="25" height="20" fill="rgba(200,164,90,0.15)" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <rect x="108" y="292" width="25" height="20" fill="rgba(200,164,90,0.08)" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <rect x="141" y="292" width="25" height="20" fill="rgba(200,164,90,0.15)" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <!-- windows upper -->
+          <rect x="90" y="252" width="30" height="18" fill="rgba(200,164,90,0.2)" stroke="rgba(200,164,90,0.3)" stroke-width="0.5"/>
+          <rect x="130" y="252" width="30" height="18" fill="rgba(200,164,90,0.1)" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <!-- terrace rail -->
+          <line x1="70" y1="241" x2="185" y2="241" stroke="rgba(200,164,90,0.35)" stroke-width="1"/>
+          <line x1="75" y1="241" x2="75" y2="252" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <line x1="95" y1="241" x2="95" y2="252" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <line x1="115" y1="241" x2="115" y2="252" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <line x1="135" y1="241" x2="135" y2="252" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <line x1="155" y1="241" x2="155" y2="252" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <line x1="175" y1="241" x2="175" y2="252" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <!-- door -->
+          <rect x="100" y="307" width="18" height="28" fill="rgba(200,164,90,0.12)" stroke="rgba(200,164,90,0.3)" stroke-width="0.5"/>
+          <!-- pool -->
+          <rect x="65" y="335" width="95" height="30" rx="2" fill="rgba(21,45,80,0.8)" stroke="rgba(200,164,90,0.3)" stroke-width="0.5"/>
+          <rect x="68" y="338" width="89" height="24" rx="1" fill="rgba(100,180,255,0.08)"/>
+        </g>
+
+        <!-- villa right (triplex) -->
+        <g filter="url(#glow)">
+          <rect x="310" y="260" width="130" height="75" fill="#0d1d35" stroke="rgba(200,164,90,0.3)" stroke-width="0.5"/>
+          <rect x="320" y="218" width="115" height="47" fill="#152d50" stroke="rgba(200,164,90,0.25)" stroke-width="0.5"/>
+          <rect x="330" y="180" width="95" height="42" fill="#1a3560" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <!-- roof -->
+          <rect x="325" y="175" width="105" height="7" fill="#1e3d6e"/>
+          <rect x="315" y="213" width="120" height="7" fill="#1a3560"/>
+          <rect x="305" y="255" width="135" height="7" fill="#152d50"/>
+          <!-- windows floor 1 -->
+          <rect x="320" y="272" width="22" height="18" fill="rgba(200,164,90,0.15)" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <rect x="352" y="272" width="22" height="18" fill="rgba(200,164,90,0.1)" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <rect x="384" y="272" width="22" height="18" fill="rgba(200,164,90,0.18)" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <rect x="416" y="272" width="18" height="18" fill="rgba(200,164,90,0.08)" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <!-- windows floor 2 -->
+          <rect x="328" y="230" width="25" height="16" fill="rgba(200,164,90,0.2)" stroke="rgba(200,164,90,0.3)" stroke-width="0.5"/>
+          <rect x="365" y="230" width="25" height="16" fill="rgba(200,164,90,0.12)" stroke="rgba(200,164,90,0.2)" stroke-width="0.5"/>
+          <rect x="400" y="230" width="25" height="16" fill="rgba(200,164,90,0.2)" stroke="rgba(200,164,90,0.3)" stroke-width="0.5"/>
+          <!-- windows floor 3 -->
+          <rect x="340" y="192" width="22" height="14" fill="rgba(200,164,90,0.25)" stroke="rgba(200,164,90,0.35)" stroke-width="0.5"/>
+          <rect x="375" y="192" width="22" height="14" fill="rgba(200,164,90,0.15)" stroke="rgba(200,164,90,0.25)" stroke-width="0.5"/>
+          <!-- railings -->
+          <line x1="325" y1="182" x2="425" y2="182" stroke="rgba(200,164,90,0.4)" stroke-width="1"/>
+          <line x1="315" y1="220" x2="435" y2="220" stroke="rgba(200,164,90,0.3)" stroke-width="1"/>
+          <!-- door -->
+          <rect x="355" y="293" width="22" height="42" fill="rgba(200,164,90,0.1)" stroke="rgba(200,164,90,0.3)" stroke-width="0.5"/>
+          <!-- pool -->
+          <rect x="315" y="335" width="115" height="28" rx="2" fill="rgba(21,45,80,0.8)" stroke="rgba(200,164,90,0.3)" stroke-width="0.5"/>
+          <rect x="318" y="338" width="109" height="22" rx="1" fill="rgba(100,180,255,0.1)"/>
+        </g>
+
+        <!-- palm trees -->
+        <g opacity="0.55">
+          <line x1="230" y1="330" x2="235" y2="265" stroke="#152d50" stroke-width="3"/>
+          <ellipse cx="235" cy="265" rx="18" ry="10" fill="#0d2a1a" transform="rotate(-15,235,265)"/>
+          <ellipse cx="235" cy="265" rx="15" ry="8" fill="#0d2a1a" transform="rotate(25,235,265)"/>
+          <ellipse cx="235" cy="265" rx="16" ry="7" fill="#0d2a1a" transform="rotate(-40,235,265)"/>
+          <ellipse cx="235" cy="265" rx="14" ry="6" fill="#0d2a1a" transform="rotate(55,235,265)"/>
+        </g>
+        <g opacity="0.4">
+          <line x1="270" y1="330" x2="266" y2="278" stroke="#152d50" stroke-width="2.5"/>
+          <ellipse cx="266" cy="278" rx="15" ry="8" fill="#0d2a1a" transform="rotate(-20,266,278)"/>
+          <ellipse cx="266" cy="278" rx="13" ry="7" fill="#0d2a1a" transform="rotate(30,266,278)"/>
+          <ellipse cx="266" cy="278" rx="14" ry="6" fill="#0d2a1a" transform="rotate(-50,266,278)"/>
+        </g>
+
+        <!-- ground -->
+        <rect x="0" y="330" width="500" height="8" fill="rgba(200,164,90,0.06)"/>
+
+        <!-- decorative border -->
+        <rect x="0" y="0" width="500" height="560" fill="none" stroke="rgba(200,164,90,0.1)" stroke-width="1"/>
+      </svg>
+
+      <div class="about-card-footer">
+        <div class="about-card-tag"><span class="inline-en">Arsuz, Hatay</span><span class="inline-tr">Arsuz, Hatay</span></div>
+        <div class="about-card-title">
+          <span class="inline-en">Mediterranean<br>Luxury Redefined</span>
+          <span class="inline-tr">Akdeniz Lüksü<br>Yeniden Tanımlandı</span>
+        </div>
+      </div>
+    </div>
+    <div class="about-badge">
+      <div class="about-badge-num">70</div>
+      <div class="about-badge-txt"><span class="inline-en">villas</span><span class="inline-tr">villa</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- VILLAS -->
+<section class="villas" id="villas">
+  <div class="villas-header reveal">
+    <p class="section-label"><span class="inline-en">Residence Types</span><span class="inline-tr">Rezidans Tipleri</span></p>
+    <div class="gold-line"></div>
+    <h2 class="section-title">
+      <span data-lang="en">Choose your<br><em>perfect villa</em></span>
+      <span data-lang="tr">Mükemmel<br><em>villanızı seçin</em></span>
+    </h2>
+  </div>
+  <div class="villas-grid reveal reveal-delay">
+    <div class="villa-card">
+      <div class="villa-card-glow"></div>
+      <div class="villa-count">62</div>
+      <div class="villa-tag"><span class="inline-en">62 Villas Available</span><span class="inline-tr">62 Villa Mevcut</span></div>
+      <h3 class="villa-title">
+        <span data-lang="en">Duplex <em>Villa</em></span>
+        <span data-lang="tr">Dubleks <em>Villa</em></span>
+      </h3>
+      <p class="villa-desc">
+        <span data-lang="en">Elegantly designed two-floor residences offering generous living spaces, private gardens, and unobstructed sea views. The perfect sanctuary for families and couples alike.</span>
+        <span data-lang="tr">Geniş yaşam alanları, özel bahçeler ve engelsiz deniz manzarası sunan zarif iki katlı rezidanslar. Aileler ve çiftler için mükemmel bir sığınak.</span>
+      </p>
+      <ul class="villa-features">
+        <li><span class="inline-en">Two spacious floor levels</span><span class="inline-tr">İki geniş kat</span></li>
+        <li><span class="inline-en">Private swimming pool</span><span class="inline-tr">Özel yüzme havuzu</span></li>
+        <li><span class="inline-en">Sea view terrace</span><span class="inline-tr">Deniz manzaralı teras</span></li>
+        <li><span class="inline-en">Private garden & parking</span><span class="inline-tr">Özel bahçe ve otopark</span></li>
+        <li><span class="inline-en">Mediterranean panorama</span><span class="inline-tr">Akdeniz panoraması</span></li>
+      </ul>
+    </div>
+    <div class="villa-card">
+      <div class="villa-card-glow"></div>
+      <div class="villa-count">8</div>
+      <div class="villa-tag" style="background:rgba(200,164,90,0.18);border-color:rgba(200,164,90,0.4)"><span class="inline-en">8 Premium Villas</span><span class="inline-tr">8 Premium Villa</span></div>
+      <h3 class="villa-title">
+        <span data-lang="en">Triplex <em>Villa</em></span>
+        <span data-lang="tr">Tripleks <em>Villa</em></span>
+      </h3>
+      <p class="villa-desc">
+        <span data-lang="en">Three floors of pure architectural excellence. Our most exclusive offering — the triplex villas command the highest vantage points with panoramic Mediterranean vistas across every level.</span>
+        <span data-lang="tr">Üç katta saf mimari mükemmellik. En özel teklifimiz — tripleks villalar, her kattan panoramik Akdeniz manzarasıyla en yüksek konumda yer alır.</span>
+      </p>
+      <ul class="villa-features">
+        <li><span class="inline-en">Three premium floor levels</span><span class="inline-tr">Üç premium kat</span></li>
+        <li><span class="inline-en">Large private swimming pool</span><span class="inline-tr">Büyük özel yüzme havuzu</span></li>
+        <li><span class="inline-en">Panoramic rooftop terrace</span><span class="inline-tr">Panoramik çatı terası</span></li>
+        <li><span class="inline-en">Expanded garden & premium finishes</span><span class="inline-tr">Geniş bahçe ve premium bitişler</span></li>
+        <li><span class="inline-en">Highest sea view vantage point</span><span class="inline-tr">En yüksek deniz manzarası</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-header reveal">
+    <p class="section-label"><span class="inline-en">Community Amenities</span><span class="inline-tr">Sosyal Olanaklar</span></p>
+    <div class="gold-line"></div>
+    <h2 class="section-title">
+      <span data-lang="en">Life beyond<br>the <em>ordinary</em></span>
+      <span data-lang="tr">Sıradanın<br><em>ötesinde</em> yaşam</span>
+    </h2>
+  </div>
+  <div class="features-grid reveal reveal-delay">
+    <div class="feature-item">
+      <span class="feature-icon">🏊</span>
+      <div class="feature-title"><span data-lang="en">Community Pool</span><span data-lang="tr">Ortak Havuz</span></div>
+      <p class="feature-desc"><span data-lang="en">A grand social pool at the community facilities — perfect for leisure and socialising with neighbours.</span><span data-lang="tr">Sosyal tesislerde büyük bir ortak havuz — komşularla dinlenme ve sosyalleşme için mükemmel.</span></p>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">🌊</span>
+      <div class="feature-title"><span data-lang="en">Beach Access</span><span data-lang="tr">Plaj Erişimi</span></div>
+      <p class="feature-desc"><span data-lang="en">Steps from the Mediterranean shore. Wake up to the sound of the sea every single morning.</span><span data-lang="tr">Akdeniz kıyısından adım mesafesinde. Her sabah denizin sesine uyanın.</span></p>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">🏡</span>
+      <div class="feature-title"><span data-lang="en">Private Pools</span><span data-lang="tr">Özel Havuzlar</span></div>
+      <p class="feature-desc"><span data-lang="en">Each and every villa includes its own private pool — your personal oasis, available at any hour.</span><span data-lang="tr">Her villa kendi özel havuzuna sahip — her zaman kişisel vahanız.</span></p>
+    </div>
+    <div class="feature-item">
+      <span class="feature-icon">🌅</span>
+      <div class="feature-title"><span data-lang="en">Sea Views</span><span data-lang="tr">Deniz Manzarası</span></div>
+      <p class="feature-desc"><span data-lang="en">Breathtaking Mediterranean vistas from every villa, designed to maximise the natural panorama.</span><span data-lang="tr">Doğal panoramayı en üst düzeyde sunan, her villadan nefes kesen Akdeniz manzarası.</span></p>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Villa <em style="font-style:italic;color:var(--gold-light)">Sunset</em> <span>Arsuz</span></div>
+  <div class="footer-copy">
+    <span class="inline-en">© 2025 Villa Sunset Arsuz. All rights reserved. · Arsuz, Hatay, Turkey</span>
+    <span class="inline-tr">© 2025 Villa Sunset Arsuz. Tüm hakları saklıdır. · Arsuz, Hatay, Türkiye</span>
+  </div>
+</footer>
+
+<script>
+// ── INTRO: dismiss on tap/click, also auto-dismiss
+const intro = document.getElementById('intro');
+const introDismiss = document.getElementById('intro-dismiss');
+setTimeout(() => intro.classList.add('active'), 80);
+function dismissIntro() {
+  if (intro.classList.contains('exit')) return;
+  intro.classList.add('exit');
+  setTimeout(() => { intro.style.display = 'none'; intro.style.pointerEvents = 'none'; }, 1200);
+}
+setTimeout(dismissIntro, 3800);
+if (introDismiss) {
+  introDismiss.addEventListener('click', dismissIntro);
+  introDismiss.addEventListener('touchend', function(e){ e.preventDefault(); dismissIntro(); });
+}
+// Tap anywhere on intro to dismiss on touch devices
+intro.addEventListener('touchend', function(e){ e.preventDefault(); dismissIntro(); });
+
+// ── STARS
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const x = Math.random() * 100, y = Math.random() * 65;
+  const o = 0.2 + Math.random() * 0.7;
+  const d = 2 + Math.random() * 4;
+  const delay = Math.random() * 5;
+  s.style.cssText = 'left:'+x+'%;top:'+y+'%;--o:'+o+';--d:'+d+'s;--delay:-'+delay+'s';
+  starsEl.appendChild(s);
+}
+
+// ── NAV scroll
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 60));
+
+// ── Mobile nav toggle
+const navToggle = document.getElementById('nav-toggle');
+const navLinks = document.getElementById('nav-links');
+if (navToggle) {
+  navToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navToggle.addEventListener('touchend', function(e){ e.preventDefault(); navLinks.classList.toggle('open'); });
+  // close on link tap
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => navLinks.classList.remove('open'));
+  });
+}
+
+// ── REVEAL on scroll
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.06 });
+reveals.forEach(r => observer.observe(r));
+
+// ── LANG
+function setLang(lang) {
+  document.body.classList.toggle('tr', lang === 'tr');
+  document.querySelectorAll('.lang-toggle button').forEach((btn, i) => {
+    btn.classList.toggle('active', (i===0 && lang==='en') || (i===1 && lang==='tr'));
+  });
+}
+</script>
+</body>
+</html>
