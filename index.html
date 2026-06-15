@@ -197,30 +197,77 @@ body {
 }
 #intro.active .intro-progress { opacity: 1; }
 
+/* intro exit — curtain split apart */
+#intro.exit {
+  pointer-events: none;
+}
+#intro.exit::before,
+#intro.exit::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  background: var(--navy);
+  z-index: 10;
+  animation: curtainSplit 1.4s var(--transition) forwards;
+}
+#intro.exit::before {
+  top: 0; height: 50%;
+  transform-origin: top;
+  animation-name: curtainTop;
+}
+#intro.exit::after {
+  bottom: 0; height: 50%;
+  transform-origin: bottom;
+  animation-name: curtainBottom;
+}
+#intro.exit .intro-content {
+  animation: introContentFade 0.4s ease forwards;
+}
+#intro.exit .intro-dismiss {
+  animation: introContentFade 0.25s ease forwards;
+}
+@keyframes curtainTop {
+  0% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(0); opacity: 0; }
+}
+@keyframes curtainBottom {
+  0% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(0); opacity: 0; }
+}
+@keyframes introContentFade {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.06); }
+}
+
+/* improved dismiss button */
 .intro-dismiss {
   position: absolute; bottom: 3rem;
-  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
   opacity: 0;
-  transition: opacity 0.7s ease 2s;
+  transition: opacity 0.6s ease 1.1s;
   cursor: pointer;
+  padding: 1rem;
 }
 #intro.active .intro-dismiss { opacity: 1; }
-.intro-dismiss span { font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--text-muted); }
+.intro-dismiss-label {
+  font-size: 0.58rem; letter-spacing: 0.5em; text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(200,164,90,0.3);
+  padding: 0.5rem 1.4rem;
+  transition: all 0.3s;
+  background: rgba(200,164,90,0.05);
+}
+.intro-dismiss:hover .intro-dismiss-label {
+  background: rgba(200,164,90,0.15);
+  border-color: rgba(200,164,90,0.6);
+}
 .intro-dismiss-line {
-  width: 1px; height: 45px;
+  width: 1px; height: 40px;
   background: linear-gradient(to bottom, var(--gold), transparent);
   animation: pulse-line 2s ease infinite 2s;
 }
-@keyframes pulse-line { 0%,100%{opacity:1} 50%{opacity:0.3} }
+@keyframes pulse-line { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-/* intro exit */
-#intro.exit {
-  animation: introExit 1.2s var(--transition) forwards;
-}
-@keyframes introExit {
-  0% { clip-path: inset(0 0 0 0); }
-  100% { clip-path: inset(0 0 100% 0); }
-}
 
 /* ── NAV ── */
 nav {
@@ -356,9 +403,9 @@ nav.scrolled {
   display: inline-flex; align-items: center; gap: 1rem;
   font-size: 0.62rem; font-weight: 300; letter-spacing: 0.5em;
   text-transform: uppercase; color: var(--gold);
-  margin-bottom: 2.5rem;
-  opacity: 0; transform: translateY(20px);
-  animation: fadeUp 1s ease 0.3s forwards;
+  margin-bottom: 1.2rem;
+  opacity: 0; transform: translateY(55px); filter: blur(5px);
+  transition: opacity 1s ease, transform 1.1s var(--transition), filter 0.9s ease;
 }
 .hero-badge::before, .hero-badge::after {
   content: ''; display: block; width: 30px; height: 1px; background: var(--gold); opacity: 0.5;
@@ -369,31 +416,47 @@ nav.scrolled {
   font-size: clamp(3.8rem, 10vw, 8.5rem);
   font-weight: 300; line-height: 0.88; letter-spacing: -0.01em;
   margin-bottom: 0.6rem;
-  opacity: 0; transform: translateY(30px);
-  animation: fadeUp 1.2s ease 0.5s forwards;
+  opacity: 0; /* hidden — particle canvas takes over */
+  position: absolute; pointer-events: none; visibility: hidden;
 }
 .hero h1 em { font-style: italic; color: var(--gold-light); }
+
+/* Particle title canvas */
+#particle-title {
+  display: block;
+  margin: 0 auto 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+#particle-title.visible { opacity: 1; }
 
 .hero-sub {
   font-size: 0.75rem; font-weight: 300; letter-spacing: 0.5em;
   text-transform: uppercase; color: var(--text-muted);
-  margin-bottom: 2.5rem;
-  opacity: 0; transform: translateY(20px);
-  animation: fadeUp 1s ease 0.8s forwards;
+  margin-bottom: 1rem;
+  opacity: 0; transform: translateY(40px); filter: blur(4px);
+  transition: opacity 1s ease, transform 1s var(--transition), filter 0.8s ease;
 }
 
 .hero-desc {
   font-size: 0.98rem; font-weight: 300; color: var(--text-dim);
-  max-width: 460px; line-height: 2; margin: 0 auto 3rem;
-  opacity: 0; transform: translateY(20px);
-  animation: fadeUp 1s ease 1s forwards;
+  max-width: 460px; line-height: 2; margin: 0 auto 1.8rem;
+  opacity: 0; transform: translateY(35px); filter: blur(3px);
+  transition: opacity 0.9s ease, transform 0.9s var(--transition), filter 0.7s ease;
 }
 
 .hero-ctas {
   display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap;
-  opacity: 0; transform: translateY(20px);
-  animation: fadeUp 1s ease 1.15s forwards;
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.85s ease, transform 0.85s var(--transition);
 }
+
+/* hero revealed state — triggered by JS after intro exits */
+.hero.hero-revealed .hero-badge  { opacity: 1; transform: none; filter: blur(0); transition-delay: 0s; }
+/* h1 handled by particle canvas */
+.hero.hero-revealed .hero-sub    { opacity: 1; transform: none; filter: blur(0); transition-delay: 0.36s; }
+.hero.hero-revealed .hero-desc   { opacity: 1; transform: none; filter: blur(0); transition-delay: 0.52s; }
+.hero.hero-revealed .hero-ctas   { opacity: 1; transform: none; transition-delay: 0.68s; }
 
 .btn-primary {
   background: var(--gold); color: var(--navy);
@@ -426,11 +489,12 @@ nav.scrolled {
 
 .hero-stats {
   display: flex; gap: 5rem; justify-content: center;
-  margin-top: 5.5rem; padding-top: 3rem;
+  margin-top: 2.5rem; padding-top: 2rem;
   border-top: 1px solid rgba(200,164,90,0.12);
-  opacity: 0; transform: translateY(20px);
-  animation: fadeUp 1s ease 1.3s forwards;
+  opacity: 0; transform: translateY(25px);
+  transition: opacity 0.85s ease, transform 0.85s var(--transition);
 }
+.hero.hero-revealed .hero-stats  { opacity: 1; transform: none; transition-delay: 0.84s; }
 .stat-item { text-align: center; }
 .stat-number {
   font-family: 'Playfair Display', serif;
@@ -443,10 +507,12 @@ nav.scrolled {
 
 .scroll-indicator {
   position: absolute; bottom: 2.5rem; left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(18px);
   display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
-  opacity: 0; animation: fadeUp 1s ease 1.6s forwards;
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.8s var(--transition);
 }
+.hero.hero-revealed .scroll-indicator { opacity: 1; transform: translateX(-50%) translateY(0); transition-delay: 1.05s; }
 .scroll-indicator span { font-size: 0.58rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--text-muted); }
 .scroll-line {
   width: 1px; height: 50px;
@@ -726,8 +792,9 @@ body.tr .inline-en { display: none; }
 
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to { opacity: 1; transform: none; }
+  0% { opacity: 0; transform: translateY(50px) skewY(1.5deg); filter: blur(4px); }
+  60% { filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) skewY(0); filter: blur(0); }
 }
 
 /* ── BURGER BUTTON ── */
@@ -800,9 +867,9 @@ body.tr .inline-en { display: none; }
     <div class="intro-tagline">Luxury Sea View Residences</div>
     <div class="intro-progress" id="intro-progress">— entering —</div>
   </div>
-  <div class="intro-dismiss" id="intro-dismiss" onclick="dismissIntro()">
+  <div class="intro-dismiss" id="intro-dismiss">
     <div class="intro-dismiss-line"></div>
-    <span>Enter</span>
+    <div class="intro-dismiss-label">Enter</div>
   </div>
 </div>
 
@@ -852,10 +919,11 @@ body.tr .inline-en { display: none; }
       <span class="inline-en">Arsuz · Hatay · Mediterranean Coast</span>
       <span class="inline-tr">Arsuz · Hatay · Akdeniz Kıyısı</span>
     </div>
-    <h1>
+    <h1 id="hero-h1-hidden">
       <span data-lang="en">Villa<br><em>Sunset</em><br>Arsuz</span>
       <span data-lang="tr">Villa<br><em>Sunset</em><br>Arsuz</span>
     </h1>
+    <canvas id="particle-title" aria-label="Villa Sunset Arsuz"></canvas>
     <p class="hero-sub">
       <span class="inline-en">Luxury Sea View Residences</span>
       <span class="inline-tr">Lüks Deniz Manzaralı Rezidanslar</span>
@@ -1180,9 +1248,21 @@ setTimeout(() => intro.classList.add('active'), 80);
 function dismissIntro() {
   if (intro.classList.contains('exit')) return;
   intro.classList.add('exit');
-  setTimeout(() => { intro.style.display = 'none'; intro.style.pointerEvents = 'none'; }, 1200);
+  setTimeout(() => { intro.style.display = 'none'; intro.style.pointerEvents = 'none'; }, 1400);
+  // Reveal hero content smoothly after curtain splits open
+  setTimeout(() => {
+    document.querySelector('.hero').classList.add('hero-revealed');
+    // Wait for fonts then start particles
+    const startWithFont = () => {
+      if (window.startParticleTitle) window.startParticleTitle();
+    };
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(startWithFont);
+    } else {
+      setTimeout(startWithFont, 500);
+    }
+  }, 900);
 }
-setTimeout(dismissIntro, 3800);
 if (introDismiss) {
   introDismiss.addEventListener('click', dismissIntro);
   introDismiss.addEventListener('touchend', function(e){ e.preventDefault(); dismissIntro(); });
@@ -1225,6 +1305,146 @@ const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.06 });
 reveals.forEach(r => observer.observe(r));
+
+// ── PARTICLE TITLE
+(function() {
+  const canvas = document.getElementById('particle-title');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const LINES = ['Villa', 'Sunset', 'Arsuz'];
+  let particles = [];
+  let animFrame;
+  let started = false;
+
+  function getFontSize() {
+    const w = window.innerWidth;
+    if (w < 480) return 48;
+    if (w < 768) return 68;
+    if (w < 1200) return 90;
+    return 120;
+  }
+
+  function sampleTextToParticles() {
+    const fs = getFontSize();
+    const lineH = fs * 1.05;
+    const totalH = LINES.length * lineH + 20;
+    const maxW = Math.min(window.innerWidth * 0.92, 860);
+
+    canvas.width = maxW;
+    canvas.height = totalH;
+    canvas.style.width = maxW + 'px';
+    canvas.style.height = totalH + 'px';
+
+    // Sample each line
+    const pts = [];
+    LINES.forEach((line, i) => {
+      const off = document.createElement('canvas');
+      off.width = maxW;
+      off.height = Math.ceil(lineH) + 20;
+      const octx = off.getContext('2d');
+      const isMiddle = i === 1;
+      const fontStr = (isMiddle ? 'italic ' : '') + '300 ' + fs + 'px "Playfair Display", Georgia, serif';
+      octx.font = fontStr;
+      octx.fillStyle = '#ffffff';
+      octx.textAlign = 'center';
+      octx.textBaseline = 'alphabetic';
+      octx.fillText(line, maxW / 2, fs);
+
+      const imgData = octx.getImageData(0, 0, maxW, Math.ceil(lineH) + 20);
+      const step = Math.max(3, Math.floor(fs / 24));
+      for (let y = 0; y < imgData.height; y += step) {
+        for (let x = 0; x < maxW; x += step) {
+          const idx = (y * maxW + x) * 4;
+          if (imgData.data[idx + 3] > 100) {
+            pts.push({
+              tx: x,
+              ty: y + i * lineH,
+              lineIdx: i
+            });
+          }
+        }
+      }
+    });
+    return pts;
+  }
+
+  window.startParticleTitle = function() {
+    if (started) return;
+    started = true;
+
+    const pts = sampleTextToParticles();
+    if (pts.length < 10) {
+      // Font not loaded — show fallback h1
+      document.querySelector('.hero h1').style.cssText = 'opacity:1;visibility:visible;position:relative;transform:none;filter:none;';
+      return;
+    }
+
+    // Build particles
+    particles = pts.map(p => {
+      const isMiddle = p.lineIdx === 1;
+      const r = Math.random();
+      const color = isMiddle
+        ? (r > 0.4 ? '#e8c97e' : '#c8a45a')
+        : (r > 0.65 ? '#c8a45a' : '#ffffff');
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 150 + Math.random() * 500;
+      return {
+        x: p.tx + Math.cos(angle) * dist,
+        y: p.ty + Math.sin(angle) * dist,
+        tx: p.tx,
+        ty: p.ty,
+        vx: 0, vy: 0,
+        size: 0.8 + Math.random() * 1.4,
+        color,
+        delay: Math.random() * 0.5,
+        arrived: false
+      };
+    });
+
+    canvas.classList.add('visible');
+    let startTime = null;
+
+    function animate(ts) {
+      if (!startTime) startTime = ts;
+      const elapsed = (ts - startTime) / 1000;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      let pending = 0;
+      for (const p of particles) {
+        if (elapsed < p.delay) { pending++; continue; }
+
+        const dx = p.tx - p.x;
+        const dy = p.ty - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 0.8) {
+          p.x = p.tx; p.y = p.ty; p.arrived = true;
+        } else {
+          pending++;
+          // Spring force
+          p.vx += dx * 0.12;
+          p.vy += dy * 0.12;
+          p.vx *= 0.72;
+          p.vy *= 0.72;
+          p.x += p.vx;
+          p.y += p.vy;
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.min(1, (elapsed - p.delay) * 3);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = 1;
+      if (pending > 0) requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  };
+})();
 
 // ── LANG
 function setLang(lang) {
