@@ -399,7 +399,9 @@ nav.scrolled {
   font-weight: 300; line-height: 0.88; letter-spacing: -0.01em;
   margin-bottom: 0.6rem;
   opacity: 0; /* hidden — particle canvas takes over */
-  position: absolute; pointer-events: none; visibility: hidden;
+  position: absolute; top: 0; left: 0; right: 0;
+  text-align: center;
+  pointer-events: none; visibility: hidden;
 }
 .hero h1 em { font-style: italic; color: var(--gold-light); }
 
@@ -438,11 +440,11 @@ nav.scrolled {
 }
 
 /* hero revealed state — triggered by JS after intro exits */
-.hero.hero-revealed .hero-badge  { opacity: 1; transform: none; filter: blur(0); transition-delay: 0s; }
+.hero.hero-revealed .hero-badge  { opacity: 1; transform: none; filter: blur(0); transition-delay: 0.1s; }
 /* h1 handled by particle canvas */
-.hero.hero-revealed .hero-sub    { opacity: 1; transform: none; filter: blur(0); transition-delay: 0.15s; }
-.hero.hero-revealed .hero-desc   { opacity: 1; transform: none; filter: blur(0); transition-delay: 0.28s; }
-.hero.hero-revealed .hero-ctas   { opacity: 1; transform: none; transition-delay: 0.4s; }
+.hero.hero-revealed .hero-sub    { opacity: 1; transform: none; filter: blur(0); transition-delay: 0.25s; }
+.hero.hero-revealed .hero-desc   { opacity: 1; transform: none; filter: blur(0); transition-delay: 0.5s; }
+.hero.hero-revealed .hero-ctas   { opacity: 1; transform: none; transition-delay: 0.75s; }
 
 .btn-primary {
   background: var(--gold); color: var(--navy);
@@ -480,7 +482,7 @@ nav.scrolled {
   opacity: 0; transform: translateY(10px);
   transition: opacity 0.7s ease, transform 0.7s var(--transition);
 }
-.hero.hero-revealed .hero-stats  { opacity: 1; transform: none; transition-delay: 0.55s; }
+.hero.hero-revealed .hero-stats  { opacity: 1; transform: none; transition-delay: 1s; }
 .stat-item { text-align: center; }
 .stat-number {
   font-family: 'Playfair Display', serif;
@@ -498,7 +500,7 @@ nav.scrolled {
   opacity: 0;
   transition: opacity 0.8s ease, transform 0.8s var(--transition);
 }
-.hero.hero-revealed .scroll-indicator { opacity: 1; transform: translateX(-50%) translateY(0); transition-delay: 0.7s; }
+.hero.hero-revealed .scroll-indicator { opacity: 1; transform: translateX(-50%) translateY(0); transition-delay: 1.25s; }
 .scroll-indicator span { font-size: 0.58rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--text-muted); }
 .scroll-line {
   width: 1px; height: 50px;
@@ -1391,8 +1393,8 @@ function dismissIntro() {
   intro.style.pointerEvents = 'none';
   setTimeout(() => { intro.style.visibility = 'hidden'; }, 400);
 
-  // Reveal hero content (badge, sub, desc, ctas) immediately so it's ready underneath
-  document.querySelector('.hero').classList.add('hero-revealed');
+  // Hero content (badge, sub, desc, ctas, stats) is revealed later,
+  // once the title dot animation has settled — see phase 'done' below.
 
   let raf;
   let startTs = null;
@@ -1633,26 +1635,20 @@ reveals.forEach(r => observer.observe(r));
     // If we have seed dots already hovering, skip the long drift-in and
     // gather sooner for a continuous dissolve -> reform effect.
     const driftTime = (seedDots && seedDots.length) ? 200 : 1200;
-    const gatherDuration = 3200;
+    const gatherDuration = 3600;
 
     // Begin gathering
     setTimeout(() => { phase = 'gathering'; phaseStart = performance.now(); }, driftTime);
-    // After gathering, start morph to real font
-    setTimeout(() => { phase = 'morphing'; phaseStart = performance.now(); }, driftTime + gatherDuration);
-    // After morph, show real font and hide canvas
+    // After gathering, settle — dots stay in place as the title (no morph to real font)
     setTimeout(() => {
-      phase = 'done';
-      // Fade in real h1, fade out canvas
-      const h1 = document.querySelector('.hero h1');
-      h1.style.cssText = 'visibility:visible;position:relative;opacity:0;transform:none;filter:blur(12px);transition:opacity 1s ease, filter 1s ease;';
-      setTimeout(() => { h1.style.opacity = '1'; h1.style.filter = 'blur(0)'; }, 50);
-      canvas.style.transition = 'opacity 0.8s ease';
-      canvas.style.opacity = '0';
-      setTimeout(() => { canvas.style.display = 'none'; }, 900);
-    }, driftTime + gatherDuration + 1800);
-
-    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
-    function easeInOut(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+      phase = 'settled';
+      canvas.style.pointerEvents = 'none';
+      // Once the title has settled, reveal the rest of the hero content
+      // top to bottom (badge, subtitle, description, CTAs, stats, scroll cue)
+      setTimeout(() => {
+        document.querySelector('.hero').classList.add('hero-revealed');
+      }, 250);
+    }, driftTime + gatherDuration);
 
     function animate(ts) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1662,18 +1658,18 @@ reveals.forEach(r => observer.observe(r));
 
       for (const p of particles) {
         if (phase === 'drifting') {
-          // Float around gently
+          // Float around gently — slow, calm hover
           p.x += p.vx;
           p.y += p.vy;
           // Bounce off edges
           if (p.x < 0 || p.x > maxW) p.vx *= -1;
           if (p.y < 0 || p.y > totalH) p.vy *= -1;
           // Slight random drift
-          p.vx += (Math.random() - 0.5) * 0.06;
-          p.vy += (Math.random() - 0.5) * 0.06;
+          p.vx += (Math.random() - 0.5) * 0.03;
+          p.vy += (Math.random() - 0.5) * 0.03;
           // Dampen
-          p.vx *= 0.98;
-          p.vy *= 0.98;
+          p.vx *= 0.97;
+          p.vy *= 0.97;
           // Fade in
           p.alpha = Math.min(0.55, p.alpha + 0.008);
 
@@ -1684,19 +1680,19 @@ reveals.forEach(r => observer.observe(r));
           ctx.fill();
 
         } else if (phase === 'gathering') {
-          // Spring toward target — gentler pull, slower settle
-          const t = Math.min(1, elapsed / 3200);
+          // Spring toward target — slow, smooth glide into place
+          const t = Math.min(1, elapsed / 3600);
           const dx = p.tx - p.x;
           const dy = p.ty - p.y;
-          p.vx += dx * 0.045;
-          p.vy += dy * 0.045;
-          p.vx *= 0.86;
-          p.vy *= 0.86;
+          p.vx += dx * 0.022;
+          p.vy += dy * 0.022;
+          p.vx *= 0.93;
+          p.vy *= 0.93;
           p.x += p.vx;
           p.y += p.vy;
           // Increase brightness as they arrive
           const dist = Math.sqrt(dx*dx + dy*dy);
-          p.alpha = Math.min(1, p.alpha + 0.012);
+          p.alpha = Math.min(1, p.alpha + 0.009);
 
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -1716,32 +1712,17 @@ reveals.forEach(r => observer.observe(r));
             ctx.fill();
           }
 
-        } else if (phase === 'morphing') {
-          // Stay in position, fade out gradually
-          const t = Math.min(1, elapsed / 1800);
-          p.alpha = Math.max(0, 1 - easeInOut(t));
+        } else if (phase === 'settled') {
+          // Dots have arrived — hold position with a subtle idle shimmer
+          p.x = p.tx;
+          p.y = p.ty;
+          p.alpha = 0.85 + Math.sin(ts * 0.0015 + p.tx * 0.05 + p.ty * 0.05) * 0.15;
 
           ctx.beginPath();
-          ctx.arc(p.tx, p.ty, p.size, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fillStyle = p.color;
           ctx.globalAlpha = p.alpha;
           ctx.fill();
-
-          // Draw actual text fading in over the dots
-          if (p.lineIdx === 0 && p === particles[0]) {
-            const textAlpha = easeOut(t);
-            LINES.forEach((line, i) => {
-              const isMiddle = i === 1;
-              ctx.font = (isMiddle ? 'italic ' : '') + '300 ' + getFontSize() + 'px "Playfair Display", Georgia, serif';
-              ctx.fillStyle = isMiddle ? '#e8c97e' : '#ffffff';
-              ctx.textAlign = 'center';
-              ctx.textBaseline = 'alphabetic';
-              ctx.globalAlpha = textAlpha;
-              if (ctxFilterSupported) ctx.filter = 'blur(' + (8 * (1-t)) + 'px)';
-              ctx.fillText(line, canvas.width / 2, i * (getFontSize() * 1.15) + getFontSize() * 0.82);
-              if (ctxFilterSupported) ctx.filter = 'none';
-            });
-          }
         }
       }
 
@@ -1754,7 +1735,7 @@ reveals.forEach(r => observer.observe(r));
         requestAnimationFrame(() => onFirstFrame());
       }
 
-      if (phase !== 'done') requestAnimationFrame(animate);
+      requestAnimationFrame(animate);
     }
 
     requestAnimationFrame(animate);
