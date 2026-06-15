@@ -1247,7 +1247,7 @@ function sampleIntroDots() {
   // Sample dots from the actual rendered positions of intro text elements
   // using getBoundingClientRect + Range API for pixel-accurate glyph positions.
   const pts = [];
-  const step = Math.max(3, Math.floor(window.innerWidth / 160));
+  const step = window.innerWidth < 480 ? 5 : Math.max(3, Math.floor(window.innerWidth / 160));
 
   // Elements to sample from (eyebrow, logo, tagline, dismiss label)
   const targets = [
@@ -1342,7 +1342,7 @@ function sampleIntroDots() {
     o2.font = '300 ' + logoSize + 'px "Playfair Display", Georgia, serif';
     o2.fillText('Villa Sunset Arsuz', cx, h * 0.42);
     const img = o2.getImageData(0, 0, w, h).data;
-    const s = Math.max(4, Math.floor(Math.min(w, h) / 140));
+    const s = window.innerWidth < 480 ? 6 : Math.max(4, Math.floor(Math.min(w, h) / 140));
     for (let y = 0; y < h; y += s) {
       for (let x = 0; x < w; x += s) {
         if (img[(y * w + x) * 4 + 3] > 80) pts.push({ x, y });
@@ -1545,7 +1545,9 @@ reveals.forEach(r => observer.observe(r));
     });
 
     const imgData = octx.getImageData(0, 0, iW, iH);
-    const step = Math.max(3, Math.floor(fs / 26));
+    // Larger step on small screens = fewer, bigger, more readable dots and less lag
+    const stepDivisor = window.innerWidth < 480 ? 16 : 26;
+    const step = Math.max(window.innerWidth < 480 ? 5 : 3, Math.floor(fs / stepDivisor));
     const pts = [];
 
     for (let y = 0; y < iH; y += step) {
@@ -1558,7 +1560,7 @@ reveals.forEach(r => observer.observe(r));
       }
     }
 
-    return { pts, fs, lineH, maxW, totalH };
+    return { pts, fs, lineH, maxW, totalH, step };
   }
 
   // Check if ctx.filter is supported (not available on all mobile browsers)
@@ -1574,7 +1576,7 @@ reveals.forEach(r => observer.observe(r));
     if (started) return;
     started = true;
 
-    const { pts, fs, lineH, maxW, totalH } = sampleText();
+    const { pts, fs, lineH, maxW, totalH, step } = sampleText();
 
     if (pts.length < 10) {
       document.querySelector('.hero h1').style.cssText = 'opacity:1;visibility:visible;position:relative;transform:none;filter:none;';
@@ -1619,7 +1621,7 @@ reveals.forEach(r => observer.observe(r));
         // drift velocity
         vx: (Math.random() - 0.5) * 0.8,
         vy: (Math.random() - 0.5) * 0.8,
-        size: 0.9 + Math.random() * 1.3,
+        size: step * 0.32 + Math.random() * (step * 0.18),
         color,
         lineIdx: p.lineIdx,
         alpha: seedDots && seedDots.length ? (0.5 + Math.random() * 0.4) : (0.15 + Math.random() * 0.5),
@@ -1700,15 +1702,12 @@ reveals.forEach(r => observer.observe(r));
           ctx.globalAlpha = p.alpha;
           ctx.fill();
 
-          // Glow on close particles
+          // Subtle highlight on close particles (cheap solid circle, no gradient)
           if (dist < 8) {
             ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size * 2.5, 0, Math.PI * 2);
-            const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2.5);
-            grad.addColorStop(0, p.color.replace(')', ', 0.3)').replace('rgb', 'rgba').replace('#e8c97e', 'rgba(232,201,126,0.3)').replace('#c8a45a', 'rgba(200,164,90,0.25)').replace('#ffffff', 'rgba(255,255,255,0.2)'));
-            grad.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = grad;
-            ctx.globalAlpha = 0.5;
+            ctx.arc(p.x, p.y, p.size * 1.6, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = 0.25;
             ctx.fill();
           }
 
