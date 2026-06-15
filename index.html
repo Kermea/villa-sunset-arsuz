@@ -417,6 +417,13 @@ nav.scrolled {
   max-width: 860px;
 }
 #particle-title.visible { opacity: 1; }
+#particle-title.settled-shimmer {
+  animation: titleShimmer 4s ease-in-out infinite;
+}
+@keyframes titleShimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.92; }
+}
 
 .hero-sub {
   font-size: 0.75rem; font-weight: 300; letter-spacing: 0.5em;
@@ -1545,9 +1552,8 @@ reveals.forEach(r => observer.observe(r));
     });
 
     const imgData = octx.getImageData(0, 0, iW, iH);
-    // Larger step on small screens = fewer, bigger, more readable dots and less lag
-    const stepDivisor = window.innerWidth < 480 ? 16 : 26;
-    const step = Math.max(window.innerWidth < 480 ? 5 : 3, Math.floor(fs / stepDivisor));
+    // Dense sampling everywhere — needed to capture thin serif/italic strokes
+    const step = Math.max(3, Math.floor(fs / 28));
     const pts = [];
 
     for (let y = 0; y < iH; y += step) {
@@ -1621,7 +1627,7 @@ reveals.forEach(r => observer.observe(r));
         // drift velocity
         vx: (Math.random() - 0.5) * 0.8,
         vy: (Math.random() - 0.5) * 0.8,
-        size: step * 0.32 + Math.random() * (step * 0.18),
+        size: step * 0.45 + Math.random() * (step * 0.2),
         color,
         lineIdx: p.lineIdx,
         alpha: seedDots && seedDots.length ? (0.5 + Math.random() * 0.4) : (0.15 + Math.random() * 0.5),
@@ -1712,10 +1718,10 @@ reveals.forEach(r => observer.observe(r));
           }
 
         } else if (phase === 'settled') {
-          // Dots have arrived — hold position with a subtle idle shimmer
+          // Dots have arrived — draw once at final position, then stop the loop
           p.x = p.tx;
           p.y = p.ty;
-          p.alpha = 0.85 + Math.sin(ts * 0.0015 + p.tx * 0.05 + p.ty * 0.05) * 0.15;
+          p.alpha = 1;
 
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -1732,6 +1738,13 @@ reveals.forEach(r => observer.observe(r));
       if (firstFrame && onFirstFrame) {
         animFrame = true;
         requestAnimationFrame(() => onFirstFrame());
+      }
+
+      // Stop the loop once settled — a cheap CSS animation handles the
+      // idle shimmer instead of redrawing hundreds of dots every frame
+      if (phase === 'settled') {
+        canvas.classList.add('settled-shimmer');
+        return;
       }
 
       requestAnimationFrame(animate);
