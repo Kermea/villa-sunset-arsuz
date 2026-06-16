@@ -1552,24 +1552,31 @@ reveals.forEach(r => observer.observe(r));
     });
 
     const imgData = octx.getImageData(0, 0, iW, iH);
-    // Dense sampling everywhere — needed to capture thin serif/italic strokes
-    const step = Math.max(3, Math.floor(fs / 28));
+    // Dense sampling — step must be small enough to fill thin serif strokes
+    // Mobile canvas is physically smaller so we need a proportionally smaller step
+    const step = window.innerWidth < 480 ? 1
+               : window.innerWidth < 768 ? 2
+               : Math.max(3, Math.floor(fs / 28));
     // Dot size scales with screen size, NOT with sampling step — smaller
     // screens get visibly bigger dots so the title stays readable
-    const dotSize = window.innerWidth < 480 ? 2.6
-                   : window.innerWidth < 768 ? 2.2
-                   : 1.6;
-    const pts = [];
-
+    const dotSize = window.innerWidth < 480 ? 1.0
+                   : window.innerWidth < 768 ? 1.6
+                   : 2.0;
+    const allPts = [];
     for (let y = 0; y < iH; y += step) {
       for (let x = 0; x < iW; x += step) {
         const idx = (y * iW + x) * 4;
         if (imgData.data[idx + 3] > 100) {
           const lineIdx = Math.min(LINES.length - 1, Math.floor(y / lineH));
-          pts.push({ tx: x, ty: y, lineIdx });
+          allPts.push({ tx: x, ty: y, lineIdx });
         }
       }
     }
+    // Cap at 2500 particles for performance — thin uniformly to preserve spread
+    const maxPts = 2500;
+    const pts = allPts.length > maxPts
+      ? allPts.filter((_, i) => i % Math.ceil(allPts.length / maxPts) === 0)
+      : allPts;
 
     return { pts, fs, lineH, maxW, totalH, step, dotSize };
   }
