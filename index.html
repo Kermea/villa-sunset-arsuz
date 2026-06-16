@@ -1700,18 +1700,11 @@ reveals.forEach(r => observer.observe(r));
           ctx.fill();
 
         } else if (phase === 'gathering') {
-          // Spring toward target — slow, smooth glide into place
-          const t = Math.min(1, elapsed / 3600);
+          // Lerp toward target — smooth one-way glide, no overshoot or shaking
           const dx = p.tx - p.x;
           const dy = p.ty - p.y;
-          p.vx += dx * 0.022;
-          p.vy += dy * 0.022;
-          p.vx *= 0.93;
-          p.vy *= 0.93;
-          p.x += p.vx;
-          p.y += p.vy;
-          // Increase brightness as they arrive
-          const dist = Math.sqrt(dx*dx + dy*dy);
+          p.x += dx * 0.028;
+          p.y += dy * 0.028;
           p.alpha = Math.min(1, p.alpha + 0.009);
 
           ctx.beginPath();
@@ -1720,7 +1713,8 @@ reveals.forEach(r => observer.observe(r));
           ctx.globalAlpha = p.alpha;
           ctx.fill();
 
-          // Subtle highlight on close particles (cheap solid circle, no gradient)
+          // Subtle highlight on close particles
+          const dist = Math.sqrt(dx*dx + dy*dy);
           if (dist < 8) {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size * 1.6, 0, Math.PI * 2);
