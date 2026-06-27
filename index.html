@@ -779,11 +779,12 @@ footer {
 }
 
 /* ── LANG HELPERS ── */
-body:not(.tr) [data-lang="tr"],
-body:not(.tr) .inline-tr { display: none; }
-body.tr [data-lang="en"],
-body.tr .inline-en { display: none; }
-[data-lang], .inline-en, .inline-tr { display: inline; }
+/* Default (no class) = English */
+[data-lang="tr"], .inline-tr { display: none; }
+[data-lang="en"], .inline-en { display: inline; }
+/* Turkish active */
+body.tr [data-lang="en"], body.tr .inline-en { display: none; }
+body.tr [data-lang="tr"], body.tr .inline-tr { display: inline; }
 
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {
@@ -1810,10 +1811,20 @@ reveals.forEach(r => observer.observe(r));
 // ── LANG
 function setLang(lang) {
   document.body.classList.toggle('tr', lang === 'tr');
-  document.querySelectorAll('.lang-toggle button').forEach((btn, i) => {
-    btn.classList.toggle('active', (i===0 && lang==='en') || (i===1 && lang==='tr'));
+  localStorage.setItem('vsa-lang', lang);
+  document.querySelectorAll('.lang-toggle button').forEach(btn => {
+    const isEN = btn.textContent.trim() === 'EN';
+    const isTR = btn.textContent.trim() === 'TR';
+    btn.classList.toggle('active',
+      (isEN && lang === 'en') || (isTR && lang === 'tr')
+    );
   });
 }
+// On load: default to EN, restore saved preference if any
+(function() {
+  const saved = localStorage.getItem('vsa-lang') || 'en';
+  setLang(saved);
+})();
 </script>
 </body>
 </html>
